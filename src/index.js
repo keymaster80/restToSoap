@@ -40,25 +40,22 @@ app.post('/convert', async (req, res) => {
             // Imprime el resultado completo para depuración
             console.log('Parsed XML:', result);
 
-            // Verifica si la estructura del resultado es la esperada
-            if (!result['SOAP-ENV:Envelope'] || !result['SOAP-ENV:Envelope']['SOAP-ENV:Body']) {
-                console.error('Unexpected XML structure:', result);
-                return res.status(500).json({ error: 'Unexpected XML structure' });
-            }
-
-            // Extrae el contenido de <Salida> y desescapa las entidades HTML
-            const salida = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
-            const decodedSalida = he.decode(salida); // Desescapa las entidades HTML
-
+            // Extrae el contenido de <Salida> dentro del espacio de nombres "GxVisionX_K2BTools"
             try {
+                // Navega en la estructura XML
+                const salidaElement = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
+                
+                // Desescapa las entidades HTML
+                const decodedSalida = he.decode(salidaElement);
+
                 // Convierte el contenido de <Salida> a JSON
                 const jsonResponse = JSON.parse(decodedSalida);
                 console.log('JSON Response:', jsonResponse);
 
                 // Envía la respuesta JSON
                 res.json(jsonResponse);
-            } catch (jsonError) {
-                console.error('Error parsing JSON from response:', jsonError);
+            } catch (parseError) {
+                console.error('Error parsing JSON from response:', parseError);
                 res.status(500).json({ error: 'Error parsing JSON from SOAP response' });
             }
         });
