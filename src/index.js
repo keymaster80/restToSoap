@@ -10,6 +10,7 @@ app.post('/convert', async (req, res) => {
     try {
         // Construye el XML Request desde el JSON recibido
         const jsonInput = req.body;
+        console.log("el json inicial es ",jsonInput);
         const xmlRequest = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gxv="GxVisionX_K2BTools">
             <soapenv:Header/>
             <soapenv:Body>
