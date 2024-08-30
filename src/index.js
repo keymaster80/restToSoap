@@ -65,6 +65,7 @@ app.post('/convert', async (req, res) => {
                     // Envía la respuesta JSON
                     res.json(jsonResponse);
                 } else if (salidaElement && typeof salidaElement === 'object' && salidaElement['$']) {
+                    console.log("============ Entro a la validacion de object===============");
                     // Si es un objeto, convierte sus valores a una cadena JSON
                     const jsonResponse = JSON.stringify(salidaElement);
                     console.log('JSON Response:', jsonResponse);
@@ -72,6 +73,7 @@ app.post('/convert', async (req, res) => {
                     // Envía la respuesta JSON
                     res.json(JSON.parse(jsonResponse));
                 } else {
+                    console.log("============ Entro al else por defecto===============");
                     throw new Error('Elemento <Salida> tiene un formato inesperado');
                 }
             } catch (parseError) {
