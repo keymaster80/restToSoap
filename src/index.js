@@ -43,7 +43,7 @@ app.post('/convert', async (req, res) => {
             try {
                 // Navega en la estructura XML
                 const salidaElement = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
-                
+                console.log("la salida es -------------------->",salidaElement)
                 // Verifica el tipo de dato de <Salida>
                 if (typeof salidaElement === 'string') {
                     // Desescapa las entidades HTML
