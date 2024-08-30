@@ -43,18 +43,23 @@ app.post('/convert', async (req, res) => {
             try {
                 // Navega en la estructura XML
                 const salidaElement = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
-                console.log("la salida es -------------------->", salidaElement);
+                console.log("La salida es -------------------->", salidaElement);
 
                 // Verifica el tipo de dato de <Salida>
                 if (typeof salidaElement === 'string') {
+
+                    console.log("============ Entro a la validacion de string===============");
                     // Desescapa las entidades HTML
                     const decodedSalida = he.decode(salidaElement);
 
                     // Reemplaza &quot; por comillas dobles "
                     const correctedJsonString = decodedSalida.replace(/&quot;/g, '"');
 
+                    // Desescapa las barras invertidas dobles
+                    const singleBackslashString = correctedJsonString.replace(/\\{2}/g, '\\');
+
                     // Convierte el contenido de <Salida> a JSON
-                    const jsonResponse = JSON.parse(correctedJsonString);
+                    const jsonResponse = JSON.parse(singleBackslashString);
                     console.log('JSON Response:', jsonResponse);
 
                     // Envía la respuesta JSON
