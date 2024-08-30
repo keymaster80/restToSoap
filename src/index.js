@@ -64,6 +64,12 @@ app.post('/convert', async (req, res) => {
                     // Convierte el contenido de <Salida> a JSON
                     try {
                         const jsonResponse = JSON.parse(singleBackslashString);
+                
+                        // Convierte el campo 'Abonados' de cadena JSON a objeto JSON
+                        if (jsonResponse.Abonados) {
+                            jsonResponse.Abonados = JSON.parse(jsonResponse.Abonados);
+                        }
+                
                         console.log('JSON Response:', jsonResponse);
                 
                         // Envía la respuesta JSON
@@ -84,6 +90,7 @@ app.post('/convert', async (req, res) => {
                     console.log("============ Entro al else por defecto===============");
                     throw new Error('Elemento <Salida> tiene un formato inesperado');
                 }
+                
                 
             } catch (parseError) {
                 console.error('Error parsing JSON from response:', parseError);
