@@ -31,7 +31,7 @@ app.post('/convert', async (req, res) => {
         console.log('SOAP Response:', xmlResponse);
 
         // Convierte XML a JSON
-        xml2js.parseString(xmlResponse, { explicitArray: false, mergeAttrs: true }, (err, result) => {
+        xml2js.parseString(xmlResponse, { explicitArray: false, mergeAttrs: true, xmlns: true }, (err, result) => {
             if (err) {
                 console.error('Error parsing XML:', err);
                 return res.status(500).json({ error: 'Error parsing XML response' });
@@ -41,13 +41,13 @@ app.post('/convert', async (req, res) => {
             console.log('Parsed XML:', result);
 
             // Verifica si la estructura del resultado es la esperada
-            if (!result['soapenv:Envelope'] || !result['soapenv:Envelope']['soapenv:Body']) {
+            if (!result['SOAP-ENV:Envelope'] || !result['SOAP-ENV:Envelope']['SOAP-ENV:Body']) {
                 console.error('Unexpected XML structure:', result);
                 return res.status(500).json({ error: 'Unexpected XML structure' });
             }
 
             // Extrae el contenido de <Salida> y desescapa las entidades HTML
-            const salida = result['soapenv:Envelope']['soapenv:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
+            const salida = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
             const decodedSalida = he.decode(salida); // Desescapa las entidades HTML
 
             try {
