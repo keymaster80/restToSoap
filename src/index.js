@@ -40,20 +40,24 @@ app.post('/convert', async (req, res) => {
             // Imprime el resultado completo para depuración
             console.log('Parsed XML:', result);
 
-            // Extrae el contenido de <Salida> dentro del espacio de nombres "GxVisionX_K2BTools"
             try {
                 // Navega en la estructura XML
                 const salidaElement = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
                 
-                // Desescapa las entidades HTML
-                const decodedSalida = he.decode(salidaElement);
+                // Verifica si el elemento Salida es una cadena
+                if (typeof salidaElement === 'string') {
+                    // Desescapa las entidades HTML
+                    const decodedSalida = he.decode(salidaElement);
 
-                // Convierte el contenido de <Salida> a JSON
-                const jsonResponse = JSON.parse(decodedSalida);
-                console.log('JSON Response:', jsonResponse);
+                    // Convierte el contenido de <Salida> a JSON
+                    const jsonResponse = JSON.parse(decodedSalida);
+                    console.log('JSON Response:', jsonResponse);
 
-                // Envía la respuesta JSON
-                res.json(jsonResponse);
+                    // Envía la respuesta JSON
+                    res.json(jsonResponse);
+                } else {
+                    throw new Error('Elemento <Salida> no es una cadena');
+                }
             } catch (parseError) {
                 console.error('Error parsing JSON from response:', parseError);
                 res.status(500).json({ error: 'Error parsing JSON from SOAP response' });
