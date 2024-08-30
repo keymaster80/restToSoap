@@ -46,36 +46,45 @@ app.post('/convert', async (req, res) => {
                 console.log("La salida es -------------------->", salidaElement);
 
                 // Verifica el tipo de dato de <Salida>
-                if (typeof salidaElement === 'string') {
-
-                    console.log("============ Entro a la validacion de string===============");
+                if (typeof salidaElement === 'object' && salidaElement._) {
+                    console.log("============ Entro a la validacion de object con _===============");
+                    
+                    // Obtén el contenido JSON escapado del campo _
+                    let escapedJsonString = salidaElement._;
+                
                     // Desescapa las entidades HTML
-                    const decodedSalida = he.decode(salidaElement);
-
+                    const decodedSalida = he.decode(escapedJsonString);
+                
                     // Reemplaza &quot; por comillas dobles "
                     const correctedJsonString = decodedSalida.replace(/&quot;/g, '"');
-
+                
                     // Desescapa las barras invertidas dobles
                     const singleBackslashString = correctedJsonString.replace(/\\{2}/g, '\\');
-
+                
                     // Convierte el contenido de <Salida> a JSON
-                    const jsonResponse = JSON.parse(singleBackslashString);
-                    console.log('JSON Response:', jsonResponse);
-
-                    // Envía la respuesta JSON
-                    res.json(jsonResponse);
+                    try {
+                        const jsonResponse = JSON.parse(singleBackslashString);
+                        console.log('JSON Response:', jsonResponse);
+                
+                        // Envía la respuesta JSON
+                        res.json(jsonResponse);
+                    } catch (parseError) {
+                        console.error('Error parsing JSON from response:', parseError);
+                        res.status(500).json({ error: 'Error parsing JSON from SOAP response' });
+                    }
                 } else if (salidaElement && typeof salidaElement === 'object' && salidaElement['$']) {
                     console.log("============ Entro a la validacion de object===============");
                     // Si es un objeto, convierte sus valores a una cadena JSON
                     const jsonResponse = JSON.stringify(salidaElement);
                     console.log('JSON Response:', jsonResponse);
-
+                
                     // Envía la respuesta JSON
                     res.json(JSON.parse(jsonResponse));
                 } else {
                     console.log("============ Entro al else por defecto===============");
                     throw new Error('Elemento <Salida> tiene un formato inesperado');
                 }
+                
             } catch (parseError) {
                 console.error('Error parsing JSON from response:', parseError);
                 res.status(500).json({ error: 'Error parsing JSON from SOAP response' });
