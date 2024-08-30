@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const xml2js = require('xml2js');
-const he = require('he'); // Importa el módulo html-entities para desescapar entidades HTML
+const he = require('he'); // Para desescapar entidades HTML
 
 const app = express();
 app.use(express.json());
@@ -10,7 +10,6 @@ app.post('/convert', async (req, res) => {
     try {
         // Construye el XML Request desde el JSON recibido
         const jsonInput = req.body;
-        console.log("el json inicial es ",jsonInput);
         const xmlRequest = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gxv="GxVisionX_K2BTools">
             <soapenv:Header/>
             <soapenv:Body>
@@ -36,6 +35,15 @@ app.post('/convert', async (req, res) => {
             if (err) {
                 console.error('Error parsing XML:', err);
                 return res.status(500).json({ error: 'Error parsing XML response' });
+            }
+
+            // Imprime el resultado completo para depuración
+            console.log('Parsed XML:', result);
+
+            // Verifica si la estructura del resultado es la esperada
+            if (!result['soapenv:Envelope'] || !result['soapenv:Envelope']['soapenv:Body']) {
+                console.error('Unexpected XML structure:', result);
+                return res.status(500).json({ error: 'Unexpected XML structure' });
             }
 
             // Extrae el contenido de <Salida> y desescapa las entidades HTML
