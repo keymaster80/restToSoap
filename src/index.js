@@ -21,5 +21,6 @@ app.post('/convert', (req, res) => {
 
 app.listen(port, () => {
     console.log(`API corriendo en http://localhost:${port}`);
+    console.log('testing')
 });
 
