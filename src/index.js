@@ -44,7 +44,7 @@ app.post('/convert', async (req, res) => {
                 // Navega en la estructura XML
                 const salidaElement = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsGestionAbonado.BUSCARABONADOV2Response']['Salida'];
                 
-                // Verifica si el elemento Salida es una cadena
+                // Verifica el tipo de dato de <Salida>
                 if (typeof salidaElement === 'string') {
                     // Desescapa las entidades HTML
                     const decodedSalida = he.decode(salidaElement);
@@ -55,8 +55,15 @@ app.post('/convert', async (req, res) => {
 
                     // Envía la respuesta JSON
                     res.json(jsonResponse);
+                } else if (salidaElement && typeof salidaElement === 'object' && salidaElement['$']) {
+                    // Si es un objeto, convierte sus valores a una cadena JSON
+                    const jsonResponse = JSON.stringify(salidaElement);
+                    console.log('JSON Response:', jsonResponse);
+
+                    // Envía la respuesta JSON
+                    res.json(JSON.parse(jsonResponse));
                 } else {
-                    throw new Error('Elemento <Salida> no es una cadena');
+                    throw new Error('Elemento <Salida> tiene un formato inesperado');
                 }
             } catch (parseError) {
                 console.error('Error parsing JSON from response:', parseError);
