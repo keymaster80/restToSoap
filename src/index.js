@@ -174,6 +174,7 @@ app.post('/consultarciudadsegunestado', async (req, res) => {
 
     try{
         const jsonInput = req.body;
+        console.log("el request en json es ----->",JSON.stringify(jsonInput));
         const xmlRequest = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gxv="GxVisionX_K2BTools">
                             <soapenv:Header/>
                             <soapenv:Body>
