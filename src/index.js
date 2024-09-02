@@ -179,7 +179,7 @@ app.post('/consultarciudadsegunestado', async (req, res) => {
                             <soapenv:Header/>
                             <soapenv:Body>
                                 <gxv:wsDireccion.Execute>
-                                    <gxv:Xmlsdt>>${JSON.stringify(jsonInput)}</gxv:Xmlsdt>
+                                    <gxv:Xmlsdt>${JSON.stringify(jsonInput)}</gxv:Xmlsdt>
                                 </gxv:wsDireccion.Execute>
                             </soapenv:Body>
                             </soapenv:Envelope>`;
