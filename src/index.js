@@ -103,6 +103,72 @@ app.post('/convert', async (req, res) => {
     }
 });
 
+
+app.post('/consultarestados', async (req, res) => {
+    try {
+        // Construye el XML Request
+        const xmlRequest = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gxv="GxVisionX_K2BTools">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <gxv:wsDireccion.Execute>
+                    <gxv:Xmlsdt>{"Apikey" : "741D8F3B885FA8544795912C8F6B1045","Funcion" : "ESTADO"}</gxv:Xmlsdt>
+                </gxv:wsDireccion.Execute>
+            </soapenv:Body>
+        </soapenv:Envelope>`;
+
+        // Envía la solicitud SOAP
+        const response = await axios.post('http://200.8.126.162:8080/GxVisionX_K2BToolsJavaEnvironment_GxTest174/servlet/awsdireccion', xmlRequest, {
+            headers: {
+                'Content-Type': 'text/xml'
+            }
+        });
+
+        // Procesa la respuesta SOAP
+        const xmlResponse = response.data;
+        console.log('SOAP Response:', xmlResponse);
+
+        // Convierte XML a JSON
+        xml2js.parseString(xmlResponse, { explicitArray: false, mergeAttrs: true, xmlns: true }, (err, result) => {
+            if (err) {
+                console.error('Error parsing XML:', err);
+                return res.status(500).json({ error: 'Error parsing XML response' });
+            }
+
+            try {
+                // Navega en la estructura XML
+                const responseElement = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['wsDireccion.ExecuteResponse'];
+                const xmlsdtoutElement = responseElement['Xmlsdtout']['_']; // El JSON dentro de <Xmlsdtout>
+                const coderror = responseElement['Coderror']['_'];
+                const msgerr = responseElement['Msgerr']['_'];
+
+                // Desescapa las entidades HTML
+                const decodedXmlsdtout = he.decode(xmlsdtoutElement);
+
+                // Convierte el contenido de <Xmlsdtout> a JSON
+                const estadosArray = JSON.parse(decodedXmlsdtout);
+
+                // Estructura la respuesta final en JSON
+                const jsonResponse = {
+                    estados: estadosArray,
+                    coderror: coderror,
+                    msgerr: msgerr
+                };
+
+                console.log('JSON Response:', jsonResponse);
+
+                // Envía la respuesta JSON
+                res.json(jsonResponse);
+            } catch (parseError) {
+                console.error('Error parsing JSON from response:', parseError);
+                res.status(500).json({ error: 'Error parsing JSON from SOAP response' });
+            }
+        });
+    } catch (error) {
+        console.error('Error processing SOAP request:', error);
+        res.status(500).json({ error: 'Error processing SOAP request' });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`API corriendo en http://localhost:${PORT}`);
