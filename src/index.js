@@ -506,7 +506,7 @@ app.post('/consultardireccionessegunurbanizacion', async (req, res) => {
     catch (error) {
 
     }
-console.log("testing")
+console.log("testinggggg")
 });
 
 const PORT = process.env.PORT || 3000;
