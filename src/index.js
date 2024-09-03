@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const xml2js = require('xml2js');
 const he = require('he'); // Para desescapar entidades HTML
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
@@ -506,7 +507,7 @@ app.post('/consultardireccionessegunurbanizacion', async (req, res) => {
     catch (error) {
 
     }
-console.log("testinggggg")
+console.log("testing")
 });
 
 const PORT = process.env.PORT || 3000;
